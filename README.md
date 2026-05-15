@@ -34,7 +34,7 @@
 
 ### 1단계 — FFmpeg 설치 (필수)
 
-세로 고침은 영상 변환에 [FFmpeg](https://ffmpeg.org/)를 사용합니다. 앱 실행 전에 반드시 설치해야 합니다.
+'세로 고침'은 영상 변환에 [FFmpeg](https://ffmpeg.org/)를 사용합니다. 앱 실행 전에 반드시 설치해야 합니다.
 
 #### macOS
 
@@ -55,6 +55,10 @@ ffmpeg -version
 
 #### Windows
 
+* 자동설치
+1. 다운로드 한 압축파일을 풀고 install-ffmpeg.bat 파일을 실행하면 자동 설치 후 PATH를 추가해 줍니다.
+
+* 수동설치
 1. [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html) 에서 Windows 빌드 다운로드
 2. 압축 해제 후 `bin` 폴더 경로(예: `C:\ffmpeg\bin`)를 시스템 환경 변수 `PATH`에 추가
 3. 명령 프롬프트(cmd)에서 설치 확인:
@@ -70,13 +74,13 @@ ffmpeg -version
 
 | 운영체제 | 파일 | 설명 |
 |---|---|---|
-| macOS | `.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
-| Windows | `Setup.exe` | 설치 마법사 방식 |
-| Windows | `Portable.exe` | 설치 없이 바로 실행 |
+| macOS | `Sero-Gochim-for-macOS-v1.0.0.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
+| Windows | `Sero-Gochim-for-windows-Setup-v1.1.0.exe` | 설치 마법사 방식 |
+| Windows | `Sero-Gochim-for-Windows-Portable-v1.0.0.exe` | 설치 없이 바로 실행 |
 
 #### macOS 설치
 
-1. `.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
+1. `Sero-Gochim-for-macOS-v1.1.0.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
 2. 처음 실행 시 "확인되지 않은 개발자" 경고가 뜨면:
    - **시스템 설정 → 개인 정보 보호 및 보안 → "확인 없이 열기"** 클릭
    - 또는 터미널에서 실행:
@@ -86,42 +90,8 @@ ffmpeg -version
 
 #### Windows 설치
 
-1. `Setup.exe`를 실행하고 설치 경로 선택 후 완료
+1. `Sero-Gochim-Setup-v1.1.0.exe`를 실행하고 설치 경로 선택 후 완료
 2. 바탕화면 또는 시작 메뉴 바로가기로 실행
-
----
-
-## 직접 빌드하기
-
-**요구 사항**
-
-- [Node.js](https://nodejs.org/) 18 이상
-- FFmpeg (위 설치 방법 참고)
-
-**빌드 절차**
-
-```bash
-# 저장소 클론
-git clone https://github.com/creatorjosephkr/sero-gochim.git
-cd sero-gochim
-
-# 의존성 설치
-npm install
-
-# 개발 모드 실행
-npm start
-
-# macOS용 DMG 빌드
-npm run build:mac
-
-# Windows용 EXE 빌드 (Windows 환경 필요)
-npm run build:win
-
-# macOS + Windows 동시 빌드
-npm run build:all
-```
-
-빌드 결과물은 `dist/` 폴더에 생성됩니다.
 
 ---
 
@@ -216,6 +186,12 @@ ffmpeg -version
 
 #### Windows
 
+* Automatic Installation
+
+1. Unzip the downloaded compressed file and run the install-ffmpeg.bat file. It will automatically install the file and add it to the PATH.
+
+* Manual Installation
+
 1. Download a Windows build from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
 2. Extract the archive and add the `bin` folder path (e.g., `C:\ffmpeg\bin`) to the system `PATH` environment variable
 3. Verify in Command Prompt:
@@ -231,13 +207,13 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 | OS | File | Description |
 |---|---|---|
-| macOS | `.dmg` | Universal build (Apple Silicon + Intel) |
-| Windows | `Setup.exe` | Standard installer wizard |
-| Windows | `Portable.exe` | No installation required |
+| macOS | `Sero-Gochim-for-macOS-v1.1.0.dmg` | Universal build (Apple Silicon + Intel) |
+| Windows | `Sero-Gochim-for-windows-Setup-v1.1.0.exe` | Standard installer wizard |
+| Windows | `Sero-Gochim-for-windows-Portable-v1.1.0.exe` | No installation required |
 
 #### macOS
 
-1. Open the `.dmg` file and drag `Sero-Gochim` to the `Applications` folder
+1. Open the `Sero-Gochim-for-macOS-v1.1.0.dmg` file and drag `Sero-Gochim` to the `Applications` folder
 2. If you see an "unidentified developer" warning on first launch:
    - Go to **System Settings → Privacy & Security → Open Anyway**
    - Or run in Terminal:
@@ -247,43 +223,10 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 #### Windows
 
-1. Run `Setup.exe`, choose an installation directory, and complete setup
+1. Run `Sero-Gochim-for-windows-Setup-v1.1.0.exe`, choose an installation directory, and complete setup
 2. Launch from the desktop shortcut or Start Menu
 
 ---
-
-## Build from Source
-
-**Requirements**
-
-- [Node.js](https://nodejs.org/) 18 or later
-- FFmpeg (see installation instructions above)
-
-**Steps**
-
-```bash
-# Clone the repository
-git clone https://github.com/creatorjosephkr/sero-gochim.git
-cd sero-gochim
-
-# Install dependencies
-npm install
-
-# Run in development mode
-npm start
-
-# Build macOS DMG
-npm run build:mac
-
-# Build Windows EXE (requires Windows environment)
-npm run build:win
-
-# Build for both platforms
-npm run build:all
-```
-
-Build output is placed in the `dist/` folder.
-
 ---
 
 ## How to Use
