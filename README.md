@@ -74,9 +74,8 @@ ffmpeg -version
 
 | 운영체제 | 파일 | 설명 |
 |---|---|---|
-| macOS | `Sero-Gochim-for-macOS-v1.0.0.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
-| Windows | `Sero-Gochim-for-windows-Setup-v1.1.0.exe` | 설치 마법사 방식 |
-| Windows | `Sero-Gochim-for-Windows-Portable-v1.0.0.exe` | 설치 없이 바로 실행 |
+| macOS | `Sero-Gochim-for-macOS-v1.1.0-universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
+| Windows | `Sero-Gochim-for-windows-v1.1.0.zip` | 윈도우즈 10/11 |
 
 #### macOS 설치
 
@@ -207,13 +206,12 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 | OS | File | Description |
 |---|---|---|
-| macOS | `Sero-Gochim-for-macOS-v1.1.0.dmg` | Universal build (Apple Silicon + Intel) |
-| Windows | `Sero-Gochim-for-windows-Setup-v1.1.0.exe` | Standard installer wizard |
-| Windows | `Sero-Gochim-for-windows-Portable-v1.1.0.exe` | No installation required |
+| macOS | `Sero-Gochim-for-macOS-v1.1.0-universal.dmg` | Universal build (Apple Silicon + Intel) |
+| Windows | `Sero-Gochim-for-windows-v1.1.0.zip` | Windows 10/11 x64 |
 
 #### macOS
 
-1. Open the `Sero-Gochim-for-macOS-v1.1.0.dmg` file and drag `Sero-Gochim` to the `Applications` folder
+1. Open the `Sero-Gochim-for-macOS-v1.1.0-universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
 2. If you see an "unidentified developer" warning on first launch:
    - Go to **System Settings → Privacy & Security → Open Anyway**
    - Or run in Terminal:
@@ -223,7 +221,7 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 #### Windows
 
-1. Run `Sero-Gochim-for-windows-Setup-v1.1.0.exe`, choose an installation directory, and complete setup
+1. Run `Sero-Gochim-Setup-v1.1.0.exe`, choose an installation directory, and complete setup
 2. Launch from the desktop shortcut or Start Menu
 
 ---
