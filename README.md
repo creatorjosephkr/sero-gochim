@@ -1,11 +1,3 @@
-<img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/cf02288a-f141-416b-85d5-d5839c853b41" />
-
-<img width="1312" height="895" alt="image" src="https://github.com/user-attachments/assets/a7d6c5f8-a07d-42ed-a2ec-6d6269d2a163" />
-
-<img width="1312" height="895" alt="image" src="https://github.com/user-attachments/assets/5aa028bf-e84e-4b28-823b-221f9884c668" />
-
-
-
 # 세로 고침 (Sero-Gochim)
 
 **버전 1.1.0**
@@ -30,7 +22,11 @@
 
 ## 스크린샷
 
-> *(스크린샷을 이곳에 추가하세요)*
+> <img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/cf02288a-f141-416b-85d5-d5839c853b41" />
+
+> <img width="1312" height="895" alt="image" src="https://github.com/user-attachments/assets/a7d6c5f8-a07d-42ed-a2ec-6d6269d2a163" />
+
+> <img width="1312" height="895" alt="image" src="https://github.com/user-attachments/assets/5aa028bf-e84e-4b28-823b-221f9884c668" />
 
 ---
 
