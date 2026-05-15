@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "releaseNotes": "HEIC 이미지 변환 기능 추가, 비트레이트 드롭다운 UI 개선",
   "downloadUrl": "https://github.com/creatorjosephkr/sero-gochim/releases"
 }
