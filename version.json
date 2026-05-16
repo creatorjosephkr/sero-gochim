@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
-  "releaseNotes": "HEIC 이미지 변환 기능 추가, 비트레이트 드롭다운 UI 개선, GPU 가속 지원, 전반적인 기능 개선",
+  "version": "1.1.2",
+  "releaseNotes": "ffmpeg 엔진 앱에 내장하여 별도 설치 불필요, 영어 모드 추가, 기타 내부적인 기능 개선",
   "downloadUrl": "https://github.com/creatorjosephkr/sero-gochim/releases"
 }
