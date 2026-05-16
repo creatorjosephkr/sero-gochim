@@ -1,8 +1,9 @@
 # 세로 고침 (Sero-Gochim)
 
-**버전 1.1.0**
+**버전 1.1.2**
 
-영상 코덱 변환(H.265 → H.264)과 HEIC 이미지 변환을 위한 macOS / Windows 데스크탑 앱입니다.
+영상 코덱 변환(H.265 → H.264)과 HEIC 이미지 변환을 위한 macOS / Windows 데스크탑 앱입니다.  
+FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습니다.
 
 > [English version below ↓](#sero-gochim-english)
 
@@ -15,71 +16,35 @@
 - **HEIC 이미지 변환** — iPhone·Mac HEIC 파일을 JPEG(100% 품질, sRGB IEC61966-2.1 색상 공간)으로 변환
 - **이미지 리사이즈** — 가로/세로 자동 인식 후 영상 편집용 크기(FHD / QHD / UHD) 변환
 - **일괄 변환** — 여러 파일 한 번에 처리. 영상/이미지 일괄 설정 독립 지원
+- **변환 중지** — 변환 중 언제든 전체 작업 즉시 중단 가능
 - **미리보기** — 파일 목록에서 썸네일 및 애니메이션 미리보기 제공
+- **한글 / 영어 전환** — 앱 내 버튼으로 언어 즉시 전환
+- **다크 / 라이트 테마** — 색상 테마 토글 지원
 - **자동 업데이트 알림** — 앱 실행 시 새 버전 출시 여부 자동 확인
 
 ---
 
 ## 스크린샷
 
-> <img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/cf02288a-f141-416b-85d5-d5839c853b41" />
+> <img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/f2cae8c3-0396-4bf4-a7d3-49c41084ace3" />
+> <img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/a4bb32e6-0a83-426a-8fcd-ba6e307e2582" />
 
-> <img width="1312" height="895" alt="image" src="https://github.com/user-attachments/assets/a7d6c5f8-a07d-42ed-a2ec-6d6269d2a163" />
-
-> <img width="1312" height="895" alt="image" src="https://github.com/user-attachments/assets/5aa028bf-e84e-4b28-823b-221f9884c668" />
 
 ---
 
 ## 설치 방법
 
-### 1단계 — FFmpeg 설치 (필수)
-
-'세로 고침'은 영상 변환에 [FFmpeg](https://ffmpeg.org/)를 사용합니다. 앱 실행 전에 반드시 설치해야 합니다.
-
-#### macOS
-
-[Homebrew](https://brew.sh/) 설치를 권장합니다.
-
-```bash
-# Homebrew 설치 (이미 있으면 생략)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# FFmpeg 설치
-brew install ffmpeg
-```
-
-설치 확인:
-```bash
-ffmpeg -version
-```
-
-#### Windows
-
-* 자동설치
-1. 다운로드 한 압축파일을 풀고 install-ffmpeg.bat 파일을 실행하면 자동 설치 후 PATH를 추가해 줍니다.
-
-* 수동설치
-1. [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html) 에서 Windows 빌드 다운로드
-2. 압축 해제 후 `bin` 폴더 경로(예: `C:\ffmpeg\bin`)를 시스템 환경 변수 `PATH`에 추가
-3. 명령 프롬프트(cmd)에서 설치 확인:
-   ```
-   ffmpeg -version
-   ```
-
----
-
-### 2단계 — 앱 설치
-
 [Releases 페이지](https://github.com/creatorjosephkr/sero-gochim/releases)에서 운영체제에 맞는 파일을 다운로드합니다.
 
 | 운영체제 | 파일 | 설명 |
 |---|---|---|
-| macOS | `Sero-Gochim-for-macOS-v1.1.0-universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
-| Windows | `Sero-Gochim-for-windows-v1.1.0.zip` | 윈도우즈 10/11 |
+| macOS | `Sero-Gochim-v1.1.2-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
+| Windows | `Sero-Gochim-v1.1.2-Setup.exe` | 설치 마법사 방식 |
+| Windows | `Sero-Gochim-v1.1.2-Portable.exe` | 설치 없이 바로 실행 |
 
-#### macOS 설치
+### macOS 설치
 
-1. `Sero-Gochim-for-macOS-v1.1.0.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
+1. `Sero-Gochim-v1.1.2-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
 2. 처음 실행 시 "확인되지 않은 개발자" 경고가 뜨면:
    - **시스템 설정 → 개인 정보 보호 및 보안 → "확인 없이 열기"** 클릭
    - 또는 터미널에서 실행:
@@ -87,22 +52,23 @@ ffmpeg -version
      xattr -cr /Applications/Sero-Gochim.app
      ```
 
-#### Windows 설치
+### Windows 설치
 
-1. `Sero-Gochim-Setup-v1.1.0.exe`를 실행하고 설치 경로 선택 후 완료
+1. `Sero-Gochim-v1.1.2-Setup.exe`를 실행하고 설치 경로 선택 후 완료
 2. 바탕화면 또는 시작 메뉴 바로가기로 실행
 
 ---
 
 ## 사용 방법
 
-1. **파일 추가** 버튼으로 영상(MP4, MKV, MOV, AVI, WebM, TS, MTS, M2TS) 또는 이미지(HEIC, HEIF) 선택
+1. **파일 선택** 버튼 또는 드래그 앤 드롭으로 영상(MP4, MKV, MOV, AVI, WebM, TS, MTS, M2TS) 또는 이미지(HEIC, HEIF) 추가
 2. 각 파일의 변환 모드 선택:
    - **영상**: 코덱 변환(H.264) 또는 해상도 변환
    - **이미지**: 원본 크기 또는 FHD / QHD / UHD(4K)
 3. 출력 폴더 지정
 4. **모두 변환** 클릭
 5. 완료 알림 창에서 결과 확인 및 폴더 열기
+6. 변환 중 중단이 필요하면 **변환 중지** 버튼 클릭
 
 ---
 
@@ -110,8 +76,7 @@ ffmpeg -version
 
 - **macOS**: 10.13 High Sierra 이상
 - **Windows**: Windows 10 이상 (64-bit)
-- **FFmpeg**: 필수 (시스템 PATH에 설치)
-- **Node.js**: v18 이상 (직접 빌드 시에만)
+- FFmpeg/FFprobe는 앱에 내장되어 있어 별도 설치 불필요
 
 ---
 
@@ -136,9 +101,10 @@ ISC License
 
 # Sero-Gochim
 
-**Version 1.1.0**
+**Version 1.1.2**
 
-A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and HEIC image conversion.
+A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and HEIC image conversion.  
+FFmpeg/FFprobe are bundled inside the app — no separate installation required.
 
 ---
 
@@ -149,69 +115,34 @@ A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and H
 - **HEIC Image Conversion** — Convert iPhone/Mac HEIC files to JPEG (100% quality, sRGB IEC61966-2.1 color space)
 - **Image Resizing** — Auto-detect portrait/landscape orientation, resize to video-editing dimensions
 - **Batch Conversion** — Process multiple files at once with independent video/image batch settings
+- **Cancel All** — Stop all ongoing conversions at any time
 - **Preview** — Thumbnail and animated preview for files in the list
+- **Korean / English UI** — Switch language instantly from within the app
+- **Dark / Light Theme** — Toggle color theme at any time
 - **Auto Update Notification** — Checks for new releases automatically on startup
 
 ---
 
 ## Screenshots
 
-> *(Add screenshots here)*
+> <img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/5a989b74-89b5-42a8-b236-b7713b2f1c2d" />
+> <img width="1312" height="862" alt="image" src="https://github.com/user-attachments/assets/51f1e3bb-e882-4c4e-9a37-502caeb57fe8" />
 
 ---
 
 ## Installation
 
-### Step 1 — Install FFmpeg (Required)
-
-Sero-Gochim uses [FFmpeg](https://ffmpeg.org/) for video conversion. It must be installed before running the app.
-
-#### macOS
-
-Installation via [Homebrew](https://brew.sh/) is recommended.
-
-```bash
-# Install Homebrew (skip if already installed)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install FFmpeg
-brew install ffmpeg
-```
-
-Verify installation:
-```bash
-ffmpeg -version
-```
-
-#### Windows
-
-* Automatic Installation
-
-1. Unzip the downloaded compressed file and run the install-ffmpeg.bat file. It will automatically install the file and add it to the PATH.
-
-* Manual Installation
-
-1. Download a Windows build from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
-2. Extract the archive and add the `bin` folder path (e.g., `C:\ffmpeg\bin`) to the system `PATH` environment variable
-3. Verify in Command Prompt:
-   ```
-   ffmpeg -version
-   ```
-
----
-
-### Step 2 — Install the App
-
 Download the appropriate file from the [Releases page](https://github.com/creatorjosephkr/sero-gochim/releases).
 
 | OS | File | Description |
 |---|---|---|
-| macOS | `Sero-Gochim-for-macOS-v1.1.0-universal.dmg` | Universal build (Apple Silicon + Intel) |
-| Windows | `Sero-Gochim-for-windows-v1.1.0.zip` | Windows 10/11 x64 |
+| macOS | `Sero-Gochim-v1.1.2-Universal.dmg` | Universal build (Apple Silicon + Intel) |
+| Windows | `Sero-Gochim-v1.1.2-Setup.exe` | Standard installer wizard |
+| Windows | `Sero-Gochim-v1.1.2-Portable.exe` | No installation required |
 
-#### macOS
+### macOS
 
-1. Open the `Sero-Gochim-for-macOS-v1.1.0-universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
+1. Open the `Sero-Gochim-v1.1.2-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
 2. If you see an "unidentified developer" warning on first launch:
    - Go to **System Settings → Privacy & Security → Open Anyway**
    - Or run in Terminal:
@@ -219,23 +150,23 @@ Download the appropriate file from the [Releases page](https://github.com/creato
      xattr -cr /Applications/Sero-Gochim.app
      ```
 
-#### Windows
+### Windows
 
-1. Run `Sero-Gochim-Setup-v1.1.0.exe`, choose an installation directory, and complete setup
+1. Run `Sero-Gochim-v1.1.2-Setup.exe`, choose an installation directory, and complete setup
 2. Launch from the desktop shortcut or Start Menu
 
----
 ---
 
 ## How to Use
 
-1. Click **Add Files** to select video files (MP4, MKV, MOV, AVI, WebM, TS, MTS, M2TS) or images (HEIC, HEIF)
+1. Click **Select Files** or drag and drop video files (MP4, MKV, MOV, AVI, WebM, TS, MTS, M2TS) or images (HEIC, HEIF)
 2. Choose a conversion mode for each file:
    - **Video**: Codec conversion (H.264) or Resolution conversion
    - **Image**: Original size, FHD, QHD, or UHD (4K)
 3. Set an output folder
 4. Click **Convert All**
 5. View results in the completion dialog and open the output folder
+6. Click **Stop** at any time to cancel all ongoing conversions
 
 ---
 
@@ -243,8 +174,7 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 - **macOS**: 10.13 High Sierra or later
 - **Windows**: Windows 10 or later (64-bit)
-- **FFmpeg**: Required (must be in system PATH)
-- **Node.js**: v18 or later (build only)
+- FFmpeg/FFprobe are bundled — no separate installation needed
 
 ---
 
