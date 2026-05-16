@@ -1,6 +1,6 @@
 # 세로 고침 (Sero-Gochim)
 
-**버전 1.1.2**
+**버전 1.1.21**
 
 영상 코덱 변환(H.265 → H.264)과 HEIC 이미지 변환을 위한 macOS / Windows 데스크탑 앱입니다.  
 FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습니다.
@@ -101,7 +101,7 @@ ISC License
 
 # Sero-Gochim
 
-**Version 1.1.2**
+**Version 1.1.21**
 
 A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and HEIC image conversion.  
 FFmpeg/FFprobe are bundled inside the app — no separate installation required.
