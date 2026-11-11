@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>세로 고침(Sero-Gohicm) - 영상/이미지 코덱/형식 변환</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ─── Drag Region (macOS) + theme toggle ─── -->
+  <div class="drag-bar">
+    <button id="btn-lang-mac" class="titlebar-theme-btn btn-lang-toggle" title="Language / 언어">EN</button>
+    <button id="btn-theme-mac" class="titlebar-theme-btn" title="다크/라이트 모드 전환">
+      <svg class="theme-icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-icon-sun hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+  
+  <!-- ─── Windows Custom Titlebar ─── -->
+  <div id="win-titlebar" class="win-titlebar hidden">
+    <div class="win-titlebar-drag"></div>
+    <button id="btn-lang-win" class="titlebar-theme-btn btn-lang-toggle" title="Language / 언어">EN</button>
+    <button id="btn-theme-win" class="titlebar-theme-btn" title="다크/라이트 모드 전환">
+      <svg class="theme-icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-icon-sun hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <div class="win-titlebar-controls-gap"></div>
+  </div>
+
+  <!-- ─── App Container ─── -->
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <img src="icon_64x64.png" width="48" height="48" alt="MediaConvert" style="display:block;" />
+        </div>
+        <div class="header-text">
+          <h1 data-i18n="app_title">세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.5</h1>
+          <span class="subtitle" data-i18n="app_subtitle">H.265 to H.264 / MOV to MP4 / HEIC to JPG / 영상 업스케일링 / 가로세로 자동 인식-변환</span>
+        </div>
+      </div>
+      <div class="header-right" style="display: flex; gap: 8px; align-items: center;">
+        <button id="btn-theme-toggle" class="btn btn-ghost" title="다크/라이트 모드 전환">
+          <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="theme-icon-sun hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+        <button id="btn-open-dir" class="btn btn-ghost hidden" title="출력 폴더 열기">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          <span data-i18n="btn_open_dir">폴더 열기</span>
+        </button>
+        <button id="btn-output-dir" class="btn btn-ghost" title="출력 폴더 설정">
+          <span id="output-dir-prefix" class="hidden" style="font-size:12px; opacity:0.7;" data-i18n="output_dir_prefix">현재폴더/변경</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span id="output-dir-label" data-i18n="output_dir_default">출력 폴더 선택</span>
+        </button>
+        <button id="btn-quit-app" class="btn btn-ghost btn-danger-text" title="앱 종료">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span data-i18n="btn_quit">종료</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Drop Zone -->
+    <div id="drop-zone" class="drop-zone">
+      <div class="drop-zone-content">
+        <div class="drop-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <p class="drop-text" data-i18n="drop_text">H.265(HEVC)) 영상 파일 또는 HEIC 이미지를 여기로 끌고 와서 놓거나</p>
+        <button id="btn-add-files" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span data-i18n="btn_add_files">파일 선택</span>
+        </button>
+        <p class="drop-hint" data-i18n="drop_hint">MP4, MKV, MOV, AVI, WebM, TS, HEIC 지원</p>
+      </div>
+    </div>
+
+    <!-- File List -->
+    <div id="file-list-container" class="file-list-container hidden">
+      <div class="file-list-header">
+        <div class="file-list-info">
+          <h2 data-i18n="list_title">변환 대기 목록</h2>
+          <span id="file-count" class="badge">0개</span>
+        </div>
+        <div class="file-list-actions">
+          <button id="btn-add-more" class="btn btn-ghost btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span data-i18n="btn_add_more">추가</span>
+          </button>
+          <button id="btn-clear-all" class="btn btn-ghost btn-sm btn-danger-text">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            <span data-i18n="btn_clear_all">전체 삭제</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 일괄/개별 설정 토글 (2개 이상일 때 표시) -->
+      <div id="batch-mode-bar" class="batch-mode-bar hidden">
+        <div class="mode-toggle-wrap">
+          <button id="btn-mode-individual" class="mode-toggle-btn mode-active" data-i18n="btn_mode_individual">개별 설정</button>
+          <button id="btn-mode-batch" class="mode-toggle-btn" data-i18n="btn_mode_batch">일괄 설정</button>
+        </div>
+        <div id="batch-controls" class="batch-controls hidden">
+          <div id="batch-section-video" class="batch-section">
+            <span class="batch-section-title" data-i18n="batch_video">영상 변환 설정</span>
+            <div class="batch-row">
+              <span class="batch-label" data-i18n="batch_label_res">해상도 선택</span>
+              <div class="batch-opt-group" id="batch-res-group">
+                <button class="batch-opt" data-value="double" data-i18n="batch_res_double">원본의 200%</button>
+                <button class="batch-opt batch-opt-active" data-value="original" data-i18n="batch_res_original">원본 그대로 (100%)</button>
+                <button class="batch-opt" data-value="half" data-i18n="batch_res_half">원본의 50%</button>
+              </div>
+              <div class="batch-divider"></div>
+              <span class="batch-label" data-i18n="batch_label_bitrate">비트레이트</span>
+              <div class="batch-opt-group" id="batch-br-group">
+                <button class="batch-opt" data-value="200">200%</button>
+                <button class="batch-opt" data-value="150">150%</button>
+                <button class="batch-opt batch-opt-active" data-value="100">100%</button>
+                <button class="batch-opt" data-value="75">75%</button>
+                <button class="batch-opt" data-value="60">60%</button>
+                <button class="batch-opt" data-value="50">50%</button>
+                <button class="batch-opt" data-value="35">35%</button>
+              </div>
+            </div>
+          </div>
+          <div id="batch-section-image" class="batch-section">
+            <span class="batch-section-title" data-i18n="batch_image">사진 변환 설정</span>
+            <div class="batch-row">
+              <span class="batch-label" data-i18n="batch_label_res">해상도 선택</span>
+              <div class="batch-opt-group" id="batch-img-res-group">
+                <button class="batch-opt batch-opt-active" data-value="original" data-i18n="batch_img_original">원본</button>
+                <button class="batch-opt" data-value="fhd">FHD 1080p</button>
+                <button class="batch-opt" data-value="qhd">QHD 1440p</button>
+                <button class="batch-opt" data-value="uhd">UHD(4K) 2160p</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="file-list" class="file-list"></div>
+
+      <div class="convert-bar">
+        <div class="convert-bar-info">
+          <span id="total-size">총 크기: 0 MB</span>
+          <span id="overall-progress" class="hidden">진행: 0%</span>
+          <span id="encoder-badge" class="encoder-badge">인코더 감지 중...</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button id="btn-convert-all" class="btn btn-primary btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span data-i18n="btn_convert_all">모두 변환</span>
+          </button>
+          <button id="btn-cancel-all" class="btn btn-ghost btn-lg hidden" style="border-color:rgba(200,40,30,0.5);color:var(--danger);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+            </svg>
+            <span data-i18n="btn_cancel">변환 중지</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="footer">
+      <p data-i18n="copyright">Copyright Ⓒ 크리에이터 요셉(creatorjoseph@kakao.com)</p>
+      <p class="license-notice" data-i18n="license_notice">100% 무료 소프트웨어입니다.</p>
+      <div class="donate-section">
+        <span class="donate-title" data-i18n="donate_title">앱개발 응원하기</span>
+        <button id="btn-donate-kakao" class="btn-donate">카카오뱅크(KakaoBank)</button>
+        <button id="btn-donate-paypal" class="btn-donate">페이팔(PayPal)</button>
+      </div>
+    </footer>
+
+    <!-- Update Available Modal -->
+    <div id="update-modal" class="modal hidden">
+      <div class="modal-backdrop" id="update-modal-backdrop"></div>
+      <div class="complete-modal-content">
+        <div class="complete-modal-icon update-icon">↑</div>
+        <h2 class="complete-modal-title" data-i18n="modal_update_title">업데이트 알림</h2>
+        <p id="update-modal-version" class="complete-modal-desc"></p>
+        <p id="update-modal-notes" class="complete-modal-desc update-notes"></p>
+        <div class="complete-modal-actions">
+          <button id="btn-update-download" class="btn btn-primary" data-i18n="modal_update_download">다운로드</button>
+          <button id="btn-close-update" class="btn btn-secondary" data-i18n="modal_update_later">나중에</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion Complete Modal -->
+    <div id="complete-modal" class="modal hidden">
+      <div class="modal-backdrop" id="complete-modal-backdrop"></div>
+      <div class="complete-modal-content">
+        <div class="complete-modal-icon">✓</div>
+        <h2 class="complete-modal-title" data-i18n="modal_complete_title">변환 완료</h2>
+        <p id="complete-modal-desc" class="complete-modal-desc"></p>
+        <div class="complete-modal-actions">
+          <button id="btn-open-dir-modal" class="btn btn-primary" data-i18n="modal_open_dir">폴더 열기</button>
+          <button id="btn-close-complete" class="btn btn-secondary" data-i18n="modal_close">닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KakaoBank QR Modal -->
+    <div id="qr-modal" class="modal hidden">
+      <div class="modal-backdrop" id="qr-modal-backdrop"></div>
+      <div class="qr-modal-content">
+        <button class="qr-modal-close" id="btn-close-qr">✕</button>
+        <img src="./pay/pay_qr.svg" onerror="this.onerror=null;this.src='./pay/pay_qr2.png';" alt="카카오뱅크 QR코드" class="qr-image" />
+        <p class="qr-desc">앱 개발자가 꾸준히 좋은 앱을 개발하라는 의미인 응원의 후원금입니다.<br>스마트폰 카메라의 사진 모드로 QR코드를 비춰주세요</p>
+      </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="preview-title">미리보기</h3>
+          <button id="btn-close-preview" class="btn-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="preview-loading" class="preview-loading">
+            <div class="spinner"></div>
+            <p data-i18n="preview_generating">미리보기 생성 중...</p>
+          </div>
+          <video id="preview-video" class="preview-video hidden" controls autoplay loop muted></video>
+          <img id="preview-image" class="preview-image hidden" alt="Preview" />
+        </div>
+        <div class="modal-footer">
+          <div id="preview-info" class="preview-info"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="renderer.js"></script>
+</body>
+</html>

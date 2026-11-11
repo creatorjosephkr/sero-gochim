@@ -1,0 +1,135 @@
+{
+  "name": "sero-gochim",
+  "version": "1.1.5",
+  "description": "H.265 to H.264 Video Converter",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "npm install @ffprobe-installer/win32-x64 --force --ignore-scripts && node scripts/fetch-win-ffmpeg.js && electron-builder --win",
+    "build:win:cross": "npm install @ffprobe-installer/win32-x64 --force --ignore-scripts && node scripts/fetch-win-ffmpeg.js && electron-builder --win --config.win.target=zip",
+    "build:all": "npm install @ffprobe-installer/win32-x64 --force --ignore-scripts && node scripts/fetch-win-ffmpeg.js && electron-builder -mw"
+  },
+  "keywords": [
+    "video",
+    "converter",
+    "h265",
+    "h264",
+    "hevc"
+  ],
+  "author": "CREATOR JOSEPH",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^42.0.1",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.mediaconvert.app",
+    "productName": "Sero-Gochim",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "public/**/*",
+      "node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/@ffmpeg-installer/**",
+      "node_modules/@ffprobe-installer/**"
+    ],
+    "mac": {
+      "x64ArchFiles": "**/node_modules/@ff{mpeg,probe}-installer/**",
+      "files": [
+        "!node_modules/@ffmpeg-installer/win32-x64/**",
+        "!node_modules/@ffprobe-installer/win32-x64/**"
+      ],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.utilities"
+    },
+    "dmg": {
+      "background": "build/dmg-background.png",
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 130,
+          "y": 254,
+          "type": "file"
+        },
+        {
+          "x": 410,
+          "y": 254,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "extraResources": [
+        {
+          "from": "node_modules/@ffmpeg-installer/win32-x64/ffmpeg.exe",
+          "to": "ffmpeg.exe"
+        },
+        {
+          "from": "node_modules/@ffprobe-installer/win32-x64/ffprobe.exe",
+          "to": "ffprobe.exe"
+        }
+      ],
+      "files": [
+        "!node_modules/@ffmpeg-installer/darwin-arm64/**",
+        "!node_modules/@ffmpeg-installer/darwin-x64/**",
+        "!node_modules/@ffprobe-installer/darwin-arm64/**",
+        "!node_modules/@ffprobe-installer/darwin-x64/**"
+      ],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2"
+  },
+  "optionalDependencies": {
+    "@ffmpeg-installer/win32-x64": "^4.1.0",
+    "@ffprobe-installer/win32-x64": "^5.1.0"
+  }
+}

@@ -1,11 +1,5 @@
 {
-  "version": "1.1.40",
-  "releaseDate": "2026-05-21",
-  "releaseNotes": [
-    "MacOS에서 앱 시작 시 Applications에서 다른 버전의 Sero-Gochim 앱 자동 감지 및 제거",
-    "DMG 설치 창에 제거 방법 표시",
-    "IBM Plex Sans KR 웹폰트 적용으로 타이포그래피 개선",
-    "CSS 폰트 스택 최적화"
-  ],
+  "version": "1.1.5",
+  "releaseNotes": "카카오뱅크 후원 QR 이미지 표시 오류 수정 및 NVENC 하드웨어 가속 인식 개선",
   "downloadUrl": "https://github.com/creatorjosephkr/sero-gochim/releases"
 }
