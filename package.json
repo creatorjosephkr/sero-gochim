@@ -42,6 +42,7 @@
       "node_modules/@ffprobe-installer/**"
     ],
     "mac": {
+      "artifactName": "Sero-Gochim-v${version}-mac-${arch}.${ext}",
       "x64ArchFiles": "**/node_modules/@ff{mpeg,probe}-installer/**",
       "files": [
         "!node_modules/@ffmpeg-installer/win32-x64/**",
@@ -118,10 +119,14 @@
       ]
     },
     "nsis": {
+      "artifactName": "Sero-Gochim-v${version}-windows-setup.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "Sero-Gochim-v${version}-windows-portable.${ext}"
     }
   },
   "dependencies": {
