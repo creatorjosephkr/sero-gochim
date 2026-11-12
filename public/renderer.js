@@ -44,7 +44,7 @@ window.api.getEncoder().then((res) => {
 // ─── i18n ─────────────────────────────────────────────────
 const TRANSLATIONS = {
   ko: {
-    app_title: '세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.7',
+    app_title: '세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.8',
     app_subtitle: 'H.265 to H.264 / MOV to MP4 / 이미지 변환(HEIC/JPG/PNG) / 영상 업스케일링 / 가로세로 자동 인식-변환',
     drop_text: 'H.265(HEVC) 영상 파일 또는 이미지(HEIC, JPG, PNG)를 여기로 끌고 와서 놓거나',
     btn_add_files: '파일 선택',
@@ -129,7 +129,7 @@ const TRANSLATIONS = {
     btn_ffmpeg_download: 'FFmpeg 공식 다운로드 페이지 열기',
   },
   en: {
-    app_title: 'Sero-Gochim - Video/Image Codec Converter V1.1.7',
+    app_title: 'Sero-Gochim - Video/Image Codec Converter V1.1.8',
     app_subtitle: 'H.265 to H.264 / MOV to MP4 / Image Conversion (HEIC/JPG/PNG) / Video Upscaling / Auto Portrait & Landscape',
     drop_text: 'Drop H.265 video or images (HEIC, JPG, PNG) here, or',
     btn_add_files: 'Select Files',

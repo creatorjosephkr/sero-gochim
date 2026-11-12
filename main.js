@@ -697,100 +697,108 @@ ipcMain.handle('convert-file', async (_event, { filePath, outputDir, fileId, sel
     probeProc.stdout.on('data', (d) => (probeOut += d.toString()));
     probeProc.on('error', (err) => reject(err));
     probeProc.on('close', (probeCode) => {
-      let videoBitrate = null;
-      let rotation = 0;
       try {
-        const info = JSON.parse(probeOut);
-        const vs = info.streams.find((s) => s.codec_type === 'video');
-        if (vs?.bit_rate) videoBitrate = parseInt(vs.bit_rate);
-        else if (info.format?.bit_rate) videoBitrate = parseInt(info.format.bit_rate);
+        let videoBitrate = null;
+        let rotation = 0;
+        let probedFps = 0;
+        try {
+          const info = JSON.parse(probeOut);
+          const vs = info.streams?.find((s) => s.codec_type === 'video');
+          if (vs) {
+            probedFps = parseFps(vs);
+            if (vs.bit_rate) videoBitrate = parseInt(vs.bit_rate);
+            if (vs.side_data_list) {
+              const dm = vs.side_data_list.find((sd) => sd.side_data_type === 'Display Matrix');
+              if (dm && dm.rotation !== undefined) rotation = dm.rotation;
+            }
+            if (!rotation && vs.tags?.rotate) rotation = parseInt(vs.tags.rotate, 10);
+          }
+          if (!videoBitrate && info.format?.bit_rate) {
+            videoBitrate = parseInt(info.format.bit_rate);
+          }
+        } catch (e) { /* proceed without bitrate info */ }
 
-        if (vs?.side_data_list) {
-          const dm = vs.side_data_list.find((sd) => sd.side_data_type === 'Display Matrix');
-          if (dm && dm.rotation !== undefined) rotation = dm.rotation;
+        // 선택된 해상도가 있으면 사용, 없으면 원본 비트레이트 사용
+        let targetBitrate = videoBitrate;
+        let scaleFilter = null;
+
+        if (selectedResolution) {
+          targetBitrate = Math.floor(selectedResolution.bitrate * 1000); // kbps to bps로 변환
+          scaleFilter = `scale=${selectedResolution.width}:${selectedResolution.height}`;
         }
-        if (!rotation && vs?.tags?.rotate) rotation = parseInt(vs.tags.rotate, 10);
-      } catch (e) { /* proceed without bitrate info */ }
 
-      // 선택된 해상도가 있으면 사용, 없으면 원본 비트레이트 사용
-      let targetBitrate = videoBitrate;
-      let scaleFilter = null;
+        // 프레임레이트 결정 (사용자 지정값 -> 가변프레임 VFR 표준 스냅 -> 원본 측정값)
+        let effectiveFps = targetFps;
+        if (!effectiveFps || isNaN(effectiveFps) || effectiveFps <= 0) {
+          effectiveFps = getStandardFps(probedFps) || probedFps || null;
+        }
 
-      if (selectedResolution) {
-        targetBitrate = Math.floor(selectedResolution.bitrate * 1000); // kbps to bps로 변환
-        scaleFilter = `scale=${selectedResolution.width}:${selectedResolution.height}`;
-      }
+        // 비디오 필터 구성 (해상도 스케일링 + 고정 프레임레이트 CFR 강제화)
+        const filters = [];
+        if (scaleFilter) {
+          filters.push(scaleFilter);
+        }
+        if (effectiveFps && effectiveFps > 0) {
+          filters.push(`fps=fps=${effectiveFps}:round=near`);
+        }
+        const videoFilter = filters.length > 0 ? filters.join(',') : null;
 
-      // 프레임레이트 결정 (사용자 지정값 -> 가변프레임 VFR 표준 스냅 -> 원본 측정값)
-      let effectiveFps = targetFps;
-      const probedFps = vs ? parseFps(vs) : 0;
-      if (!effectiveFps || isNaN(effectiveFps) || effectiveFps <= 0) {
-        effectiveFps = getStandardFps(probedFps) || probedFps || null;
-      }
+        const args = [
+          '-y',
+          '-i', filePath,
+          ...buildVideoEncoderArgs(activeEncoder, targetBitrate, videoFilter, effectiveFps),
+          '-c:a', 'aac',
+          '-b:a', '192k',
+          '-af', 'aresample=async=1:first_pts=0',
+          '-fps_mode', 'cfr',
+          '-map_metadata', '0',
+          '-movflags', '+faststart',
+          '-progress', 'pipe:1',
+          outputPath,
+        ];
 
-      // 비디오 필터 구성 (해상도 스케일링 + 고정 프레임레이트 CFR 강제화)
-      const filters = [];
-      if (scaleFilter) {
-        filters.push(scaleFilter);
-      }
-      if (effectiveFps && effectiveFps > 0) {
-        filters.push(`fps=fps=${effectiveFps}:round=near`);
-      }
-      const videoFilter = filters.length > 0 ? filters.join(',') : null;
+        const proc = spawn(ffmpegPath, args);
+        activeProcesses.set(fileId, proc);
 
-      const args = [
-        '-y',
-        '-i', filePath,
-        ...buildVideoEncoderArgs(activeEncoder, targetBitrate, videoFilter, effectiveFps),
-        '-c:a', 'aac',
-        '-b:a', '192k',
-        '-af', 'aresample=async=1:first_pts=0',
-        '-fps_mode', 'cfr',
-        '-map_metadata', '0',
-        '-movflags', '+faststart',
-        '-progress', 'pipe:1',
-        outputPath,
-      ];
+        let stderrBuf = '';
 
-      const proc = spawn(ffmpegPath, args);
-      activeProcesses.set(fileId, proc);
-
-      let stderrBuf = '';
-
-      proc.stdout.on('data', (data) => {
-        const lines = data.toString().split('\n');
-        for (const line of lines) {
-          // FFmpeg 8.x uses out_time_us, older versions use out_time_ms
-          if (line.startsWith('out_time_us=') || line.startsWith('out_time_ms=')) {
-            const val = parseInt(line.split('=')[1]);
-            if (!isNaN(val)) {
-              // out_time_us is in microseconds, out_time_ms in microseconds too (despite name)
-              mainWindow?.webContents.send('convert-progress', {
-                fileId,
-                timeUs: val,
-              });
+        proc.stdout.on('data', (data) => {
+          const lines = data.toString().split('\n');
+          for (const line of lines) {
+            // FFmpeg 8.x uses out_time_us, older versions use out_time_ms
+            if (line.startsWith('out_time_us=') || line.startsWith('out_time_ms=')) {
+              const val = parseInt(line.split('=')[1]);
+              if (!isNaN(val)) {
+                // out_time_us is in microseconds, out_time_ms in microseconds too (despite name)
+                mainWindow?.webContents.send('convert-progress', {
+                  fileId,
+                  timeUs: val,
+                });
+              }
             }
           }
-        }
-      });
+        });
 
-      proc.stderr.on('data', (d) => {
-        stderrBuf += d.toString();
-      });
+        proc.stderr.on('data', (d) => {
+          stderrBuf += d.toString();
+        });
 
-      proc.on('close', (code) => {
-        activeProcesses.delete(fileId);
-        if (code === 0) {
-          resolve({ success: true, outputPath });
-        } else {
-          reject(new Error(`FFmpeg exited with code ${code}: ${stderrBuf.slice(-500)}`));
-        }
-      });
+        proc.on('close', (code) => {
+          activeProcesses.delete(fileId);
+          if (code === 0) {
+            resolve({ success: true, outputPath });
+          } else {
+            reject(new Error(`FFmpeg exited with code ${code}: ${stderrBuf.slice(-500)}`));
+          }
+        });
 
-      proc.on('error', (err) => {
-        activeProcesses.delete(fileId);
+        proc.on('error', (err) => {
+          activeProcesses.delete(fileId);
+          reject(err);
+        });
+      } catch (err) {
         reject(err);
-      });
+      }
     });
   });
 });

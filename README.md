@@ -9,7 +9,7 @@
 
 # 세로 고침 (Sero-Gochim)
 
-**버전 1.1.7**
+**버전 1.1.8**
 
 영상 코덱 변환(H.265 → H.264)과 HEIC 이미지 변환을 위한 macOS / Windows 데스크탑 앱입니다.  
 FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습니다.
@@ -49,13 +49,13 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 
 | 운영체제 | 파일 | 설명 |
 |---|---|---|
-| macOS | `Sero-Gochim-v1.1.7-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
-| Windows | `Sero-Gochim-v1.1.7-Setup.exe` | 설치 마법사 방식 |
-| Windows | `Sero-Gochim-v1.1.7-Portable.exe` | 설치 없이 바로 실행 |
+| macOS | `Sero-Gochim-v1.1.8-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
+| Windows | `Sero-Gochim-v1.1.8-Setup.exe` | 설치 마법사 방식 |
+| Windows | `Sero-Gochim-v1.1.8-Portable.exe` | 설치 없이 바로 실행 |
 
 ### macOS 설치
 
-1. `Sero-Gochim-v1.1.7-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
+1. `Sero-Gochim-v1.1.8-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
 2. 처음 실행 시 "확인되지 않은 개발자" 경고가 뜨면:
    - **시스템 설정 → 개인 정보 보호 및 보안 → "확인 없이 열기"** 클릭
    - 또는 터미널에서 실행:
@@ -65,7 +65,7 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 
 ### Windows 설치
 
-1. `Sero-Gochim-v1.1.7-Setup.exe`를 실행하고 설치 경로 선택 후 완료
+1. `Sero-Gochim-v1.1.8-Setup.exe`를 실행하고 설치 경로 선택 후 완료
 2. 바탕화면 또는 시작 메뉴 바로가기로 실행
 
 ---
@@ -92,6 +92,10 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 ---
 
 ## 버전 히스토리
+
+### v1.1.8 (2026.11.12)
+- **긴급 수정**: 파일 변환 클릭 시 변환 프로세스 초기화 단계에서 발생하던 자바스크립트 오류(`ReferenceError: vs is not defined`) 수정
+- **안정성 강화**: 메인 프로세스 비동기 프로브 및 변환 프로세스 예외 처리 방어 코드 보강
 
 ### v1.1.7 (2026.11.12)
 - **개선**: 가변 프레임레이트(VFR) 영상의 NLE 편집 툴 오디오 싱크 밀림(Drift) 방지 기술 적용
@@ -155,7 +159,7 @@ ISC License
 
 # Sero-Gochim
 
-**Version 1.1.7**
+**Version 1.1.8**
 
 A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and HEIC image conversion.  
 FFmpeg/FFprobe are bundled inside the app — no separate installation required.
@@ -193,13 +197,13 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 | OS | File | Description |
 |---|---|---|
-| macOS | `Sero-Gochim-v1.1.7-Universal.dmg` | Universal build (Apple Silicon + Intel) |
-| Windows | `Sero-Gochim-v1.1.7-Setup.exe` | Standard installer wizard |
-| Windows | `Sero-Gochim-v1.1.7-Portable.exe` | No installation required |
+| macOS | `Sero-Gochim-v1.1.8-Universal.dmg` | Universal build (Apple Silicon + Intel) |
+| Windows | `Sero-Gochim-v1.1.8-Setup.exe` | Standard installer wizard |
+| Windows | `Sero-Gochim-v1.1.8-Portable.exe` | No installation required |
 
 ### macOS
 
-1. Open the `Sero-Gochim-v1.1.7-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
+1. Open the `Sero-Gochim-v1.1.8-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
 2. If you see an "unidentified developer" warning on first launch:
    - Go to **System Settings → Privacy & Security → Open Anyway**
    - Or run in Terminal:
@@ -209,7 +213,7 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 ### Windows
 
-1. Run `Sero-Gochim-v1.1.7-Setup.exe`, choose an installation directory, and complete setup
+1. Run `Sero-Gochim-v1.1.8-Setup.exe`, choose an installation directory, and complete setup
 2. Launch from the desktop shortcut or Start Menu
 
 ---
@@ -236,6 +240,10 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 ---
 
 ## Version History
+
+### v1.1.8 (2026.11.12)
+- **Hotfix**: Fixed JavaScript uncaught exception (`ReferenceError: vs is not defined`) when clicking file conversion
+- **Stability**: Enhanced error handling and scoped variable safety in main process IPC handlers
 
 ### v1.1.7 (2026.11.12)
 - **Improved**: Added Audio/Video sync drift prevention for Variable Framerate (VFR) smartphone videos in NLE video editors

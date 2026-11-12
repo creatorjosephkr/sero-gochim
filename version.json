@@ -1,5 +1,5 @@
 {
-  "version": "1.1.7",
-  "releaseNotes": "가변 프레임레이트(VFR) 오디오 싱크 밀림 방지 기술 적용: 고정 프레임(CFR) 강제화, 스마트폰 비표준 FPS 자동 스냅(29.53fps → 29.97fps 등), 실시간 오디오-비디오 동기화(aresample) 탑재",
+  "version": "1.1.8",
+  "releaseNotes": "Windows 및 전체 플랫폼에서 파일 변환 시작 시 발생하던 자바스크립트 오류(vs is not defined) 긴급 수정 및 예외 처리 안정화",
   "downloadUrl": "https://github.com/creatorjosephkr/sero-gochim/releases"
 }
