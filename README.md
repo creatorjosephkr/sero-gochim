@@ -9,7 +9,7 @@
 
 # 세로 고침 (Sero-Gochim)
 
-**버전 1.1.6**
+**버전 1.1.7**
 
 영상 코덱 변환(H.265 → H.264)과 HEIC 이미지 변환을 위한 macOS / Windows 데스크탑 앱입니다.  
 FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습니다.
@@ -21,6 +21,7 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 ## 주요 기능
 
 - **코덱 변환** — H.265(HEVC) 영상을 H.264로 변환. 원본 해상도·비트레이트·프레임레이트 유지
+- **VFR 가변 프레임 오디오 싱크 밀림 방지** — 스마트폰(아이폰/갤럭시) 촬영 영상의 가변 프레임(29.53fps 등)을 고정 프레임(29.97 CFR 등)으로 정규화하고, `aresample` 실시간 오디오-비디오 동기화를 적용하여 프리미어/다빈치 리졸브 등 편집 툴에서 싱크 틀어짐 원천 차단
 - **프레임레이트(FPS) 표시 및 변경** — 원본 소스의 프레임레이트(fps) 자동 인식 표시, 개별 및 일괄 변환 시 원하는 FPS(60/50/30/29.97/25/24/23.98)로 변경 지원
 - **최신 GPU 하드웨어 가속** — NVIDIA RTX 5050 등 최신 Blackwell/Ada/Ampere GPU 및 Apple Silicon(M시리즈), Intel QuickSync, AMD AMF 완벽 지원 및 모델명 인식
 - **해상도 변환** — FHD 1080p / QHD 1440p / UHD(4K) 2160p 리사이즈 + 비트레이트 조정
@@ -48,13 +49,13 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 
 | 운영체제 | 파일 | 설명 |
 |---|---|---|
-| macOS | `Sero-Gochim-v1.1.6-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
-| Windows | `Sero-Gochim-v1.1.6-Setup.exe` | 설치 마법사 방식 |
-| Windows | `Sero-Gochim-v1.1.6-Portable.exe` | 설치 없이 바로 실행 |
+| macOS | `Sero-Gochim-v1.1.7-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
+| Windows | `Sero-Gochim-v1.1.7-Setup.exe` | 설치 마법사 방식 |
+| Windows | `Sero-Gochim-v1.1.7-Portable.exe` | 설치 없이 바로 실행 |
 
 ### macOS 설치
 
-1. `Sero-Gochim-v1.1.6-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
+1. `Sero-Gochim-v1.1.7-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
 2. 처음 실행 시 "확인되지 않은 개발자" 경고가 뜨면:
    - **시스템 설정 → 개인 정보 보호 및 보안 → "확인 없이 열기"** 클릭
    - 또는 터미널에서 실행:
@@ -64,7 +65,7 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 
 ### Windows 설치
 
-1. `Sero-Gochim-v1.1.6-Setup.exe`를 실행하고 설치 경로 선택 후 완료
+1. `Sero-Gochim-v1.1.7-Setup.exe`를 실행하고 설치 경로 선택 후 완료
 2. 바탕화면 또는 시작 메뉴 바로가기로 실행
 
 ---
@@ -91,6 +92,12 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 ---
 
 ## 버전 히스토리
+
+### v1.1.7 (2026.11.12)
+- **개선**: 가변 프레임레이트(VFR) 영상의 NLE 편집 툴 오디오 싱크 밀림(Drift) 방지 기술 적용
+  - 비표준 가변 FPS(29.53fps 등)를 표준 고정 프레임(29.97fps CFR 등)으로 자동 스냅 및 보정
+  - `aresample=async=1:first_pts=0` 실시간 오디오-비디오 동기화 및 타임스탬프 원점 재정렬 적용
+  - `-fps_mode cfr` 강제 적용으로 장시간 롱테이크 영상에서도 오디오/비디오 싱크 100% 일치 보장
 
 ### v1.1.6 (2026.11.12)
 - **신규**: 원본 영상 소스의 프레임레이트(FPS) 표시 기능 추가 (파일 메타 정보 및 미리보기 창)
@@ -148,7 +155,7 @@ ISC License
 
 # Sero-Gochim
 
-**Version 1.1.6**
+**Version 1.1.7**
 
 A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and HEIC image conversion.  
 FFmpeg/FFprobe are bundled inside the app — no separate installation required.
@@ -158,6 +165,7 @@ FFmpeg/FFprobe are bundled inside the app — no separate installation required.
 ## Features
 
 - **Codec Conversion** — Convert H.265 (HEVC) videos to H.264, preserving original resolution, bitrate, and framerate
+- **A/V Sync Drift Prevention (VFR to CFR)** — Automatically normalizes variable framerate smartphone videos (e.g. 29.53fps) to constant framerate (29.97 CFR) with real-time `aresample` audio-video synchronization, preventing audio drift in Premiere Pro and DaVinci Resolve
 - **Framerate (FPS) Display & Conversion** — Auto-detect original video framerate (fps); support converting to target FPS (60/50/30/29.97/25/24/23.98) individually or in batch
 - **Modern GPU Hardware Acceleration** — Full NVENC acceleration for NVIDIA RTX 5050 (Blackwell architecture), RTX 40/30/20 series, Apple Silicon (M-series VideoToolbox), Intel QuickSync, and AMD AMF with GPU model detection badge
 - **Resolution Conversion** — Resize to FHD 1080p, QHD 1440p, or UHD (4K) 2160p with bitrate adjustment
@@ -185,13 +193,13 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 | OS | File | Description |
 |---|---|---|
-| macOS | `Sero-Gochim-v1.1.6-Universal.dmg` | Universal build (Apple Silicon + Intel) |
-| Windows | `Sero-Gochim-v1.1.6-Setup.exe` | Standard installer wizard |
-| Windows | `Sero-Gochim-v1.1.6-Portable.exe` | No installation required |
+| macOS | `Sero-Gochim-v1.1.7-Universal.dmg` | Universal build (Apple Silicon + Intel) |
+| Windows | `Sero-Gochim-v1.1.7-Setup.exe` | Standard installer wizard |
+| Windows | `Sero-Gochim-v1.1.7-Portable.exe` | No installation required |
 
 ### macOS
 
-1. Open the `Sero-Gochim-v1.1.6-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
+1. Open the `Sero-Gochim-v1.1.7-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
 2. If you see an "unidentified developer" warning on first launch:
    - Go to **System Settings → Privacy & Security → Open Anyway**
    - Or run in Terminal:
@@ -201,7 +209,7 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 ### Windows
 
-1. Run `Sero-Gochim-v1.1.6-Setup.exe`, choose an installation directory, and complete setup
+1. Run `Sero-Gochim-v1.1.7-Setup.exe`, choose an installation directory, and complete setup
 2. Launch from the desktop shortcut or Start Menu
 
 ---
@@ -228,6 +236,12 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 ---
 
 ## Version History
+
+### v1.1.7 (2026.11.12)
+- **Improved**: Added Audio/Video sync drift prevention for Variable Framerate (VFR) smartphone videos in NLE video editors
+  - Automatic snapping of non-standard VFR rates (e.g. 29.53fps) to standard constant framerates (e.g. 29.97fps CFR)
+  - Real-time audio clock resynchronization (`aresample=async=1:first_pts=0`) and timestamp offset alignment
+  - Enforced CFR output mode (`-fps_mode cfr`) for 100% sync lock even on long-take videos
 
 ### v1.1.6 (2026.11.12)
 - **New**: Added original video source framerate (FPS) display in file list meta and preview modal

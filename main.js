@@ -471,7 +471,7 @@ ipcMain.handle('select-output-dir', async () => {
   return result.filePaths[0];
 });
 
-// ─── Framerate parsing helper ────────────────────────────
+// ─── Framerate parsing & standard CFR snapping helper ────
 function parseFps(stream) {
   if (!stream) return 0;
   const rates = [stream.avg_frame_rate, stream.r_frame_rate];
@@ -492,6 +492,24 @@ function parseFps(stream) {
     }
   }
   return 0;
+}
+
+function getStandardFps(fps) {
+  if (!fps || fps <= 0) return null;
+  // 23.5 ~ 24.3 -> 23.98 / 24
+  if (Math.abs(fps - 23.98) < 0.3) return 23.98;
+  if (Math.abs(fps - 24) < 0.3) return 24;
+  // 24.8 ~ 25.2 -> 25
+  if (Math.abs(fps - 25) < 0.3) return 25;
+  // 28.5 ~ 30.5 -> 29.97 / 30
+  if (Math.abs(fps - 29.97) < 0.6) return 29.97;
+  if (Math.abs(fps - 30) < 0.6) return 30;
+  // 49.5 ~ 50.5 -> 50
+  if (Math.abs(fps - 50) < 0.6) return 50;
+  // 58.0 ~ 60.5 -> 59.94 / 60
+  if (Math.abs(fps - 59.94) < 1.2) return 59.94;
+  if (Math.abs(fps - 60) < 1.2) return 60;
+  return null;
 }
 
 // ─── Probe file info ──────────────────────────────────────
@@ -703,22 +721,31 @@ ipcMain.handle('convert-file', async (_event, { filePath, outputDir, fileId, sel
         scaleFilter = `scale=${selectedResolution.width}:${selectedResolution.height}`;
       }
 
-      // 비디오 필터 구성 (해상도 스케일링 + 프레임레이트 변환)
+      // 프레임레이트 결정 (사용자 지정값 -> 가변프레임 VFR 표준 스냅 -> 원본 측정값)
+      let effectiveFps = targetFps;
+      const probedFps = vs ? parseFps(vs) : 0;
+      if (!effectiveFps || isNaN(effectiveFps) || effectiveFps <= 0) {
+        effectiveFps = getStandardFps(probedFps) || probedFps || null;
+      }
+
+      // 비디오 필터 구성 (해상도 스케일링 + 고정 프레임레이트 CFR 강제화)
       const filters = [];
       if (scaleFilter) {
         filters.push(scaleFilter);
       }
-      if (targetFps && !isNaN(targetFps) && targetFps > 0) {
-        filters.push(`fps=fps=${targetFps}`);
+      if (effectiveFps && effectiveFps > 0) {
+        filters.push(`fps=fps=${effectiveFps}:round=near`);
       }
       const videoFilter = filters.length > 0 ? filters.join(',') : null;
 
       const args = [
         '-y',
         '-i', filePath,
-        ...buildVideoEncoderArgs(activeEncoder, targetBitrate, videoFilter, targetFps),
+        ...buildVideoEncoderArgs(activeEncoder, targetBitrate, videoFilter, effectiveFps),
         '-c:a', 'aac',
         '-b:a', '192k',
+        '-af', 'aresample=async=1:first_pts=0',
+        '-fps_mode', 'cfr',
         '-map_metadata', '0',
         '-movflags', '+faststart',
         '-progress', 'pipe:1',

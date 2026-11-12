@@ -44,7 +44,7 @@ window.api.getEncoder().then((res) => {
 // ─── i18n ─────────────────────────────────────────────────
 const TRANSLATIONS = {
   ko: {
-    app_title: '세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.6',
+    app_title: '세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.7',
     app_subtitle: 'H.265 to H.264 / MOV to MP4 / 이미지 변환(HEIC/JPG/PNG) / 영상 업스케일링 / 가로세로 자동 인식-변환',
     drop_text: 'H.265(HEVC) 영상 파일 또는 이미지(HEIC, JPG, PNG)를 여기로 끌고 와서 놓거나',
     btn_add_files: '파일 선택',
@@ -129,7 +129,7 @@ const TRANSLATIONS = {
     btn_ffmpeg_download: 'FFmpeg 공식 다운로드 페이지 열기',
   },
   en: {
-    app_title: 'Sero-Gochim - Video/Image Codec Converter V1.1.6',
+    app_title: 'Sero-Gochim - Video/Image Codec Converter V1.1.7',
     app_subtitle: 'H.265 to H.264 / MOV to MP4 / Image Conversion (HEIC/JPG/PNG) / Video Upscaling / Auto Portrait & Landscape',
     drop_text: 'Drop H.265 video or images (HEIC, JPG, PNG) here, or',
     btn_add_files: 'Select Files',
@@ -399,6 +399,19 @@ function formatBitrate(bps) {
   if (!bps) return t('bitrate_unknown');
   if (bps >= 1_000_000) return `${(bps / 1_000_000).toFixed(1)} Mbps`;
   return `${(bps / 1_000).toFixed(0)} Kbps`;
+}
+
+function getStandardFps(fps) {
+  if (!fps || fps <= 0) return null;
+  if (Math.abs(fps - 23.98) < 0.3) return 23.98;
+  if (Math.abs(fps - 24) < 0.3) return 24;
+  if (Math.abs(fps - 25) < 0.3) return 25;
+  if (Math.abs(fps - 29.97) < 0.6) return 29.97;
+  if (Math.abs(fps - 30) < 0.6) return 30;
+  if (Math.abs(fps - 50) < 0.6) return 50;
+  if (Math.abs(fps - 59.94) < 1.2) return 59.94;
+  if (Math.abs(fps - 60) < 1.2) return 60;
+  return null;
 }
 
 function generateId() {
@@ -974,8 +987,15 @@ function updateFileElement(el, f) {
     if (fpsSelector) {
       const curFps = f.selectedFps || 'original';
       fpsSelector.innerHTML = '';
+      
+      let origLabel = `${t('batch_fps_original')}${f.info?.fps ? ` (${f.info.fps} fps)` : ''}`;
+      const snappedFps = getStandardFps(f.info?.fps);
+      if (f.info?.fps && snappedFps && Math.abs(f.info.fps - snappedFps) >= 0.05) {
+        origLabel = `${t('batch_fps_original')} (${f.info.fps} fps → ${snappedFps} CFR 보정)`;
+      }
+
       const fpsOptions = [
-        { value: 'original', label: `${t('batch_fps_original')}${f.info?.fps ? ` (${f.info.fps} fps)` : ''}` },
+        { value: 'original', label: origLabel },
         { value: '60', label: '60 fps' },
         { value: '50', label: '50 fps' },
         { value: '30', label: '30 fps' },
