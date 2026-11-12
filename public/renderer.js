@@ -23,8 +23,17 @@ function updateEncoderBadge() {
   }
 }
 
-window.api.getEncoder().then((encoder) => {
-  detectedEncoderLabel = ENCODER_LABELS[encoder] || encoder;
+window.api.getEncoder().then((res) => {
+  const encoder = (typeof res === 'object' && res?.encoder) ? res.encoder : res;
+  const gpuName = (typeof res === 'object' && res?.gpuName) ? res.gpuName : null;
+  let label = ENCODER_LABELS[encoder] || encoder;
+  if (gpuName && encoder !== 'libx264') {
+    if (encoder === 'h264_nvenc') label = `⚡ NVENC (${gpuName})`;
+    else if (encoder === 'h264_videotoolbox') label = `⚡ VideoToolbox (${gpuName})`;
+    else if (encoder === 'h264_qsv') label = `⚡ Quick Sync (${gpuName})`;
+    else if (encoder === 'h264_amf') label = `⚡ AMF (${gpuName})`;
+  }
+  detectedEncoderLabel = label;
   const badge = document.getElementById('encoder-badge');
   if (!badge) return;
   badge.textContent = detectedEncoderLabel;
@@ -35,7 +44,7 @@ window.api.getEncoder().then((encoder) => {
 // ─── i18n ─────────────────────────────────────────────────
 const TRANSLATIONS = {
   ko: {
-    app_title: '세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.5',
+    app_title: '세로 고침 (Sero-Gochim) - 영상/이미지 코덱/형식 변환기 V1.1.6',
     app_subtitle: 'H.265 to H.264 / MOV to MP4 / 이미지 변환(HEIC/JPG/PNG) / 영상 업스케일링 / 가로세로 자동 인식-변환',
     drop_text: 'H.265(HEVC) 영상 파일 또는 이미지(HEIC, JPG, PNG)를 여기로 끌고 와서 놓거나',
     btn_add_files: '파일 선택',
@@ -48,10 +57,12 @@ const TRANSLATIONS = {
     batch_video: '영상 변환 설정',
     batch_image: '사진 변환 설정',
     batch_label_res: '해상도 선택',
+    batch_label_fps: '프레임레이트',
     batch_label_bitrate: '비트레이트',
     batch_res_double: '원본의 200%',
     batch_res_original: '원본 그대로 (100%)',
     batch_res_half: '원본의 50%',
+    batch_fps_original: '원본 유지',
     batch_img_original: '원본',
     output_dir_prefix: '현재폴더/변경',
     output_dir_default: '출력 폴더 선택',
@@ -84,7 +95,7 @@ const TRANSLATIONS = {
     elapsed: '경과 {0}',
     remaining: '남은 {0}',
     conv_mode_codec: '코덱 변환(H.264)',
-    conv_mode_res: '해상도 변환',
+    conv_mode_res: '해상도·FPS 설정',
     res_uhd_portrait: 'UHD(세로) 2160×3840 (4K)',
     res_fhd_portrait: 'FHD(세로) 1080×1920',
     bitrate_select: '비율 선택 ▾',
@@ -97,6 +108,7 @@ const TRANSLATIONS = {
     res_placeholder: '해상도 선택...',
     preview_codec: '코덱',
     preview_resolution: '해상도',
+    preview_fps: '프레임레이트',
     preview_bitrate: '비트레이트',
     preview_duration: '길이',
     preview_rotation: '회전',
@@ -117,7 +129,7 @@ const TRANSLATIONS = {
     btn_ffmpeg_download: 'FFmpeg 공식 다운로드 페이지 열기',
   },
   en: {
-    app_title: 'Sero-Gochim - Video/Image Codec Converter V1.1.5',
+    app_title: 'Sero-Gochim - Video/Image Codec Converter V1.1.6',
     app_subtitle: 'H.265 to H.264 / MOV to MP4 / Image Conversion (HEIC/JPG/PNG) / Video Upscaling / Auto Portrait & Landscape',
     drop_text: 'Drop H.265 video or images (HEIC, JPG, PNG) here, or',
     btn_add_files: 'Select Files',
@@ -130,10 +142,12 @@ const TRANSLATIONS = {
     batch_video: 'VIDEO SETTINGS',
     batch_image: 'IMAGE SETTINGS',
     batch_label_res: 'Resolution',
+    batch_label_fps: 'Framerate',
     batch_label_bitrate: 'Bitrate',
     batch_res_double: '200% of Original',
     batch_res_original: 'Original (100%)',
     batch_res_half: '50% of Original',
+    batch_fps_original: 'Original',
     batch_img_original: 'Original',
     output_dir_prefix: 'Folder/Change',
     output_dir_default: 'Select Output Folder',
@@ -166,7 +180,7 @@ const TRANSLATIONS = {
     elapsed: 'Elapsed {0}',
     remaining: 'Remaining {0}',
     conv_mode_codec: 'Codec (H.264)',
-    conv_mode_res: 'Resize',
+    conv_mode_res: 'Resolution / FPS',
     res_uhd_portrait: 'UHD(Portrait) 2160×3840 (4K)',
     res_fhd_portrait: 'FHD(Portrait) 1080×1920',
     bitrate_select: 'Select Rate ▾',
@@ -179,6 +193,7 @@ const TRANSLATIONS = {
     res_placeholder: 'Select resolution...',
     preview_codec: 'Codec',
     preview_resolution: 'Resolution',
+    preview_fps: 'Framerate',
     preview_bitrate: 'Bitrate',
     preview_duration: 'Duration',
     preview_rotation: 'Rotation',
@@ -287,6 +302,7 @@ let fileIdCounter = 0;
 // 배치 모드
 let batchMode = false;
 let batchResolution = 'original'; // 'original' | 'half' | 'double'
+let batchFps = 'original'; // 'original' | '60' | '50' | '30' | '25' | '24'
 let batchBitratePercent = 100;
 let batchImageResolution = null; // null='원본' | 'fhd' | 'qhd' | 'uhd'
 
@@ -464,6 +480,7 @@ async function addFiles(filePaths) {
       isImage,
       imageResolution: null, // null = 원본 | 'fhd' | 'qhd' | 'uhd'
       selectedResolution: null, // { width, height, bitrate, label }
+      selectedFps: 'original', // 'original' | '60' | '50' | '30' | '29.97' | '25' | '24' | '23.98'
       baseBitrate: null, // 원본 비트레이트 (kbps)
       conversionMode: 'codec', // 'codec' | 'resolution'
     };
@@ -686,6 +703,8 @@ function createFileElement(f) {
         <span class="file-codec"></span>
         <span class="separator">·</span>
         <span class="file-resolution"></span>
+        <span class="separator file-fps-separator hidden">·</span>
+        <span class="file-fps hidden"></span>
         <span class="separator">·</span>
         <span class="file-bitrate"></span>
         <span class="separator">·</span>
@@ -702,6 +721,12 @@ function createFileElement(f) {
           <select class="resolution-selector" data-action="select-resolution">
             <option>${t('res_placeholder')}</option>
           </select>
+
+          <div class="fps-controls">
+            <label class="fps-label">${t('batch_label_fps')}</label>
+            <select class="fps-selector" data-action="select-fps">
+            </select>
+          </div>
 
           <div class="bitrate-controls">
             <label class="bitrate-label">${t('batch_label_bitrate')}</label>
@@ -791,6 +816,12 @@ function createFileElement(f) {
       f.selectedResolution = options[selectedIndex];
       updateUI();
     }
+  });
+
+  // FPS selector change
+  const fpsSelector = div.querySelector('.fps-selector');
+  fpsSelector?.addEventListener('change', (e) => {
+    f.selectedFps = e.target.value;
   });
 
   // Bitrate input change
@@ -888,6 +919,21 @@ function updateFileElement(el, f) {
     codecBadge.innerHTML = `<span class="codec-badge ${f.info.isHEVC ? 'hevc' : 'other'}">${codecLabel}</span>`;
 
     el.querySelector('.file-resolution').textContent = `${f.info.width}×${f.info.height}`;
+
+    // Framerate (FPS) 표시
+    const fpsEl = el.querySelector('.file-fps');
+    const fpsSep = el.querySelector('.file-fps-separator');
+    if (f.info.fps) {
+      if (fpsEl) {
+        fpsEl.textContent = `${f.info.fps} fps`;
+        fpsEl.classList.remove('hidden');
+      }
+      if (fpsSep) fpsSep.classList.remove('hidden');
+    } else {
+      if (fpsEl) fpsEl.classList.add('hidden');
+      if (fpsSep) fpsSep.classList.add('hidden');
+    }
+
     el.querySelector('.file-bitrate').textContent = formatBitrate(f.info.bitrate);
     el.querySelector('.file-duration').textContent = formatDuration(f.info.duration);
     el.querySelector('.file-size').textContent = formatBytes(f.info.fileSize);
@@ -922,6 +968,32 @@ function updateFileElement(el, f) {
       }
       resolutionSelector.appendChild(optEl);
     });
+
+    // FPS selector 업데이트
+    const fpsSelector = el.querySelector('.fps-selector');
+    if (fpsSelector) {
+      const curFps = f.selectedFps || 'original';
+      fpsSelector.innerHTML = '';
+      const fpsOptions = [
+        { value: 'original', label: `${t('batch_fps_original')}${f.info?.fps ? ` (${f.info.fps} fps)` : ''}` },
+        { value: '60', label: '60 fps' },
+        { value: '50', label: '50 fps' },
+        { value: '30', label: '30 fps' },
+        { value: '29.97', label: '29.97 fps (NTSC)' },
+        { value: '25', label: '25 fps (PAL)' },
+        { value: '24', label: '24 fps' },
+        { value: '23.98', label: '23.98 fps' },
+      ];
+      fpsOptions.forEach((opt) => {
+        const optEl = document.createElement('option');
+        optEl.value = opt.value;
+        optEl.textContent = opt.label;
+        if (opt.value === curFps) optEl.selected = true;
+        fpsSelector.appendChild(optEl);
+      });
+    }
+    const fpsLabel = el.querySelector('.fps-label');
+    if (fpsLabel) fpsLabel.textContent = t('batch_label_fps');
 
     // 비트레이트 컨트롤 업데이트
     const bitrateInput = el.querySelector('.bitrate-input');
@@ -966,6 +1038,7 @@ function updateFileElement(el, f) {
     // 변환 중/완료이거나 일괄 모드면 개별 컨트롤 비활성화
     const disableControls = batchMode || f.status !== 'pending';
     resolutionSelector.disabled = disableControls;
+    if (fpsSelector) fpsSelector.disabled = disableControls;
     if (bitrateInput) bitrateInput.disabled = disableControls;
     const btnBitrateSelect = el.querySelector('.btn-bitrate-select');
     if (btnBitrateSelect) btnBitrateSelect.disabled = disableControls;
@@ -1018,9 +1091,11 @@ async function showPreview(f) {
 
   // Show file info
   if (f.info) {
+    const fpsHtml = f.info.fps ? `<span>${t('preview_fps')}: <strong>${f.info.fps} fps</strong></span>` : '';
     previewInfo.innerHTML = `
       <span>${t('preview_codec')}: <strong>${f.info.codec}</strong></span>
       <span>${t('preview_resolution')}: <strong>${f.info.width}×${f.info.height}</strong></span>
+      ${fpsHtml}
       <span>${t('preview_bitrate')}: <strong>${formatBitrate(f.info.bitrate)}</strong></span>
       <span>${t('preview_duration')}: <strong>${formatDuration(f.info.duration)}</strong></span>
       <span>${t('preview_rotation')}: <strong>${f.info.rotation}°</strong></span>
@@ -1164,11 +1239,19 @@ async function convertAll() {
           : f.conversionMode === 'codec'
             ? { width: f.info.width, height: f.info.height, bitrate: f.baseBitrate, label: 'original' }
             : f.selectedResolution;
+
+        const targetFps = batchMode
+          ? (batchFps !== 'original' ? parseFloat(batchFps) : null)
+          : (f.conversionMode === 'resolution' && f.selectedFps && f.selectedFps !== 'original'
+              ? parseFloat(f.selectedFps)
+              : null);
+
         const result = await window.api.convertFile({
           filePath: f.path,
           outputDir,
           fileId: f.id,
           selectedResolution: resolution,
+          targetFps,
         });
         f.status = 'done';
         f.progress = 100;
@@ -1350,6 +1433,15 @@ document.getElementById('batch-res-group')?.addEventListener('click', (e) => {
     document.querySelectorAll('#batch-br-group .batch-opt').forEach(b =>
       b.classList.toggle('batch-opt-active', b.dataset.value === '100'));
   }
+});
+
+// 배치 프레임레이트 옵션
+document.getElementById('batch-fps-group')?.addEventListener('click', (e) => {
+  const btn = e.target.closest('.batch-opt[data-value]');
+  if (!btn) return;
+  batchFps = btn.dataset.value;
+  document.querySelectorAll('#batch-fps-group .batch-opt').forEach(b =>
+    b.classList.toggle('batch-opt-active', b === btn));
 });
 
 // 배치 이미지 크기 옵션

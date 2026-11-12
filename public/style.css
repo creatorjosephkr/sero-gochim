@@ -1442,6 +1442,53 @@ body {
   background: var(--surface-glass);
 }
 
+/* ─── FPS Controls ─── */
+.fps-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.fps-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.fps-selector {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all var(--duration) var(--ease);
+}
+
+.fps-selector:hover:not(:disabled) {
+  border-color: var(--border-active);
+  background: var(--bg-tertiary);
+}
+
+.fps-selector:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.fps-selector:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--surface-glass);
+}
+
 /* ─── Bitrate Controls ─── */
 .bitrate-controls {
   display: flex;

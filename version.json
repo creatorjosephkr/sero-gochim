@@ -1,5 +1,5 @@
 {
-  "version": "1.1.5",
-  "releaseNotes": "카카오뱅크 후원 QR 이미지 표시 오류 수정 및 NVENC 하드웨어 가속 인식 개선",
+  "version": "1.1.6",
+  "releaseNotes": "원본 영상 프레임레이트(FPS) 표시 및 FPS 변환 기능 추가, RTX 5050 등 최신 GPU(Blackwell 아키텍처) 인식 및 NVENC 하드웨어 가속 최적화",
   "downloadUrl": "https://github.com/creatorjosephkr/sero-gochim/releases"
 }
