@@ -197,17 +197,43 @@ async function detectEncoder() {
 }
 
 // ─── Build video encoder args ─────────────────────────────
-function buildVideoEncoderArgs(encoder, targetBitrate, videoFilter, targetFps) {
+function buildVideoEncoderArgs(encoder, targetBitrate, videoFilter, targetFps, is4K = false) {
   const args = [];
+  // 구형 편집기(프리미어 프로 CS6, CS5 등) 및 모든 NLE와의 완벽한 호환성을 위한 표준 H.264 프로파일/레벨 설정
+  // 1080p 이하는 레벨 4.1(60fps는 4.2), 4K는 레벨 5.1 적용
+  const level = is4K ? '5.1' : (targetFps && targetFps > 30 ? '4.2' : '4.1');
+  const gopSize = targetFps && targetFps > 0 ? Math.round(targetFps) : 30;
+
   switch (encoder) {
     case 'h264_videotoolbox':
-      args.push('-c:v', 'h264_videotoolbox');
+      args.push(
+        '-c:v', 'h264_videotoolbox',
+        '-profile:v', 'high',
+        '-pix_fmt', 'yuv420p',
+        '-color_range', 'tv',
+        '-colorspace', 'bt709',
+        '-color_primaries', 'bt709',
+        '-color_trc', 'bt709',
+        '-g', `${gopSize}`
+      );
       if (videoFilter) args.push('-vf', videoFilter);
       if (targetFps && targetFps > 0) args.push('-r', `${targetFps}`);
       if (targetBitrate) args.push('-b:v', `${targetBitrate}`);
       break;
     case 'h264_nvenc':
-      args.push('-c:v', 'h264_nvenc', '-preset', 'p4', '-pix_fmt', 'yuv420p');
+      args.push(
+        '-c:v', 'h264_nvenc',
+        '-preset', 'p4',
+        '-profile:v', 'high',
+        '-level:v', level,
+        '-pix_fmt', 'yuv420p',
+        '-color_range', 'tv',
+        '-colorspace', 'bt709',
+        '-color_primaries', 'bt709',
+        '-color_trc', 'bt709',
+        '-flags', '+cgop',
+        '-g', `${gopSize}`
+      );
       if (activeGpuExtraArgs && activeGpuExtraArgs.length) args.push(...activeGpuExtraArgs);
       if (videoFilter) args.push('-vf', videoFilter);
       if (targetFps && targetFps > 0) args.push('-r', `${targetFps}`);
@@ -218,19 +244,53 @@ function buildVideoEncoderArgs(encoder, targetBitrate, videoFilter, targetFps) {
       }
       break;
     case 'h264_qsv':
-      args.push('-c:v', 'h264_qsv', '-preset', 'medium', '-pix_fmt', 'yuv420p');
+      args.push(
+        '-c:v', 'h264_qsv',
+        '-preset', 'medium',
+        '-profile:v', 'high',
+        '-level:v', level,
+        '-pix_fmt', 'nv12',
+        '-color_range', 'tv',
+        '-colorspace', 'bt709',
+        '-color_primaries', 'bt709',
+        '-color_trc', 'bt709',
+        '-g', `${gopSize}`
+      );
       if (videoFilter) args.push('-vf', videoFilter);
       if (targetFps && targetFps > 0) args.push('-r', `${targetFps}`);
       if (targetBitrate) args.push('-b:v', `${targetBitrate}`);
       break;
     case 'h264_amf':
-      args.push('-c:v', 'h264_amf', '-quality', 'balanced', '-pix_fmt', 'yuv420p');
+      args.push(
+        '-c:v', 'h264_amf',
+        '-quality', 'balanced',
+        '-profile:v', 'high',
+        '-level:v', level,
+        '-pix_fmt', 'yuv420p',
+        '-color_range', 'tv',
+        '-colorspace', 'bt709',
+        '-color_primaries', 'bt709',
+        '-color_trc', 'bt709',
+        '-g', `${gopSize}`
+      );
       if (videoFilter) args.push('-vf', videoFilter);
       if (targetFps && targetFps > 0) args.push('-r', `${targetFps}`);
       if (targetBitrate) args.push('-b:v', `${targetBitrate}`);
       break;
     default: // libx264
-      args.push('-c:v', 'libx264', '-preset', 'fast', '-pix_fmt', 'yuv420p');
+      args.push(
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-profile:v', 'high',
+        '-level:v', level,
+        '-pix_fmt', 'yuv420p',
+        '-color_range', 'tv',
+        '-colorspace', 'bt709',
+        '-color_primaries', 'bt709',
+        '-color_trc', 'bt709',
+        '-flags', '+cgop',
+        '-g', `${gopSize}`
+      );
       if (videoFilter) args.push('-vf', videoFilter);
       if (targetFps && targetFps > 0) args.push('-r', `${targetFps}`);
       if (targetBitrate) {
@@ -701,11 +761,15 @@ ipcMain.handle('convert-file', async (_event, { filePath, outputDir, fileId, sel
         let videoBitrate = null;
         let rotation = 0;
         let probedFps = 0;
+        let probedWidth = 0;
+        let probedHeight = 0;
         try {
           const info = JSON.parse(probeOut);
           const vs = info.streams?.find((s) => s.codec_type === 'video');
           if (vs) {
             probedFps = parseFps(vs);
+            if (vs.width) probedWidth = parseInt(vs.width, 10);
+            if (vs.height) probedHeight = parseInt(vs.height, 10);
             if (vs.bit_rate) videoBitrate = parseInt(vs.bit_rate);
             if (vs.side_data_list) {
               const dm = vs.side_data_list.find((sd) => sd.side_data_type === 'Display Matrix');
@@ -733,25 +797,38 @@ ipcMain.handle('convert-file', async (_event, { filePath, outputDir, fileId, sel
           effectiveFps = getStandardFps(probedFps) || probedFps || null;
         }
 
-        // 비디오 필터 구성 (해상도 스케일링 + 고정 프레임레이트 CFR 강제화)
+        // 비디오 필터 구성 (해상도 스케일링 + 짝수 차원 정렬 + 고정 프레임레이트 CFR 강제화 + yuv420p 강제)
+        // 구형 프리미어 프로 CS6 등에서 초록색 화면이 나오는 원인(홀수 해상도, 10-bit HDR 색공간, NV12)을 원천 차단
         const filters = [];
         if (scaleFilter) {
           filters.push(scaleFilter);
+        } else {
+          // 홀수 해상도(스크린 녹화, 크롭 영상 등)로 인한 구형 편집기 초록색 화면 방지를 위해 항상 짝수(mod 2) 정렬
+          filters.push('scale=trunc(iw/2)*2:trunc(ih/2)*2');
         }
         if (effectiveFps && effectiveFps > 0) {
           filters.push(`fps=fps=${effectiveFps}:round=near`);
         }
-        const videoFilter = filters.length > 0 ? filters.join(',') : null;
+        // 10-bit HDR / NV12 / 비표준 색공간을 구형 NLE 완벽 호환 표준 8-bit YUV420P로 명시적 변환
+        filters.push('format=yuv420p');
+        const videoFilter = filters.join(',');
 
+        const is4K = (selectedResolution && (selectedResolution.width > 1920 || selectedResolution.height > 1088)) ||
+                     (!selectedResolution && (probedWidth > 1920 || probedHeight > 1088));
+
+        // Premiere Pro CS6 등 레거시 NLE 호환성을 위해:
+        // 1. '-map_metadata 0'을 제거하여 Dolby Vision/Apple 전용 HDR 메타데이터로 인한 디먹서 파싱 오류(초록 화면) 방지
+        // 2. 오디오를 NLE 표준 48kHz 스테레오 AAC(-ar 48000 -ac 2)로 통일
         const args = [
           '-y',
           '-i', filePath,
-          ...buildVideoEncoderArgs(activeEncoder, targetBitrate, videoFilter, effectiveFps),
+          ...buildVideoEncoderArgs(activeEncoder, targetBitrate, videoFilter, effectiveFps, is4K),
           '-c:a', 'aac',
           '-b:a', '192k',
+          '-ar', '48000',
+          '-ac', '2',
           '-af', 'aresample=async=1:first_pts=0',
           '-fps_mode', 'cfr',
-          '-map_metadata', '0',
           '-movflags', '+faststart',
           '-progress', 'pipe:1',
           outputPath,

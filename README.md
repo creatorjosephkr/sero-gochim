@@ -9,7 +9,7 @@
 
 # 세로 고침 (Sero-Gochim)
 
-**버전 1.1.8**
+**버전 1.1.9**
 
 영상 코덱 변환(H.265 → H.264)과 HEIC 이미지 변환을 위한 macOS / Windows 데스크탑 앱입니다.  
 FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습니다.
@@ -49,13 +49,13 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 
 | 운영체제 | 파일 | 설명 |
 |---|---|---|
-| macOS | `Sero-Gochim-v1.1.8-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
-| Windows | `Sero-Gochim-v1.1.8-Setup.exe` | 설치 마법사 방식 |
-| Windows | `Sero-Gochim-v1.1.8-Portable.exe` | 설치 없이 바로 실행 |
+| macOS | `Sero-Gochim-v1.1.9-Universal.dmg` | Apple Silicon / Intel 통합(Universal) 빌드 |
+| Windows | `Sero-Gochim-v1.1.9-Setup.exe` | 설치 마법사 방식 |
+| Windows | `Sero-Gochim-v1.1.9-Portable.exe` | 설치 없이 바로 실행 |
 
 ### macOS 설치
 
-1. `Sero-Gochim-v1.1.8-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
+1. `Sero-Gochim-v1.1.9-Universal.dmg` 파일을 열고 `Sero-Gochim`을 `Applications` 폴더로 드래그
 2. 처음 실행 시 "확인되지 않은 개발자" 경고가 뜨면:
    - **시스템 설정 → 개인 정보 보호 및 보안 → "확인 없이 열기"** 클릭
    - 또는 터미널에서 실행:
@@ -65,7 +65,7 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 
 ### Windows 설치
 
-1. `Sero-Gochim-v1.1.8-Setup.exe`를 실행하고 설치 경로 선택 후 완료
+1. `Sero-Gochim-v1.1.9-Setup.exe`를 실행하고 설치 경로 선택 후 완료
 2. 바탕화면 또는 시작 메뉴 바로가기로 실행
 
 ---
@@ -92,6 +92,15 @@ FFmpeg/FFprobe가 앱 안에 내장되어 있어 별도 설치가 필요 없습�
 ---
 
 ## 버전 히스토리
+
+### v1.1.9 (2026.11.12)
+- **개선**: 구형 프리미어 프로 CS6 및 레거시 NLE 영상 임포트 시 초록색 화면(Green Screen) 발생 문제 완전 해결
+  - **표준 8-bit YUV420P 강제**: 10-bit HDR/NV12/광색역 영상을 필터 그래프(`format=yuv420p`) 및 인코더 레벨에서 표준 8-bit 4:2:0으로 확실히 변환
+  - **Rec.709 표준 색공간 및 제한 범위 지정**: `-color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709` 태그를 적용하여 레거시 디코더 디먹싱 호환성 보장
+  - **짝수 해상도(mod 2) 자동 정렬**: 원본 크기 유지 시에도 홀수 해상도(스크린 녹화, 크롭 영상 등)로 인한 초록 줄/화면 깨짐 방지 (`scale=trunc(iw/2)*2:trunc(ih/2)*2`)
+  - **Closed GOP 및 표준 H.264 High Profile/Level 적용**: 구형 디코더 호환 표준 프로파일과 Closed GOP(`-flags +cgop`) 강제 적용
+  - **독점 HDR/Dolby Vision 메타데이터 오염 제거**: 구형 디먹서 파싱 오류를 유발하는 `-map_metadata 0` 제거
+  - **오디오 포맷 표준화**: NLE 표준 48kHz 스테레오 AAC(`-ar 48000 -ac 2`) 일괄 적용
 
 ### v1.1.8 (2026.11.12)
 - **긴급 수정**: 파일 변환 클릭 시 변환 프로세스 초기화 단계에서 발생하던 자바스크립트 오류(`ReferenceError: vs is not defined`) 수정
@@ -159,7 +168,7 @@ ISC License
 
 # Sero-Gochim
 
-**Version 1.1.8**
+**Version 1.1.9**
 
 A macOS / Windows desktop app for video codec conversion (H.265 → H.264) and HEIC image conversion.  
 FFmpeg/FFprobe are bundled inside the app — no separate installation required.
@@ -197,13 +206,13 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 | OS | File | Description |
 |---|---|---|
-| macOS | `Sero-Gochim-v1.1.8-Universal.dmg` | Universal build (Apple Silicon + Intel) |
-| Windows | `Sero-Gochim-v1.1.8-Setup.exe` | Standard installer wizard |
-| Windows | `Sero-Gochim-v1.1.8-Portable.exe` | No installation required |
+| macOS | `Sero-Gochim-v1.1.9-Universal.dmg` | Universal build (Apple Silicon + Intel) |
+| Windows | `Sero-Gochim-v1.1.9-Setup.exe` | Standard installer wizard |
+| Windows | `Sero-Gochim-v1.1.9-Portable.exe` | No installation required |
 
 ### macOS
 
-1. Open the `Sero-Gochim-v1.1.8-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
+1. Open the `Sero-Gochim-v1.1.9-Universal.dmg` file and drag `Sero-Gochim` to the `Applications` folder
 2. If you see an "unidentified developer" warning on first launch:
    - Go to **System Settings → Privacy & Security → Open Anyway**
    - Or run in Terminal:
@@ -213,7 +222,7 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 
 ### Windows
 
-1. Run `Sero-Gochim-v1.1.8-Setup.exe`, choose an installation directory, and complete setup
+1. Run `Sero-Gochim-v1.1.9-Setup.exe`, choose an installation directory, and complete setup
 2. Launch from the desktop shortcut or Start Menu
 
 ---
@@ -240,6 +249,15 @@ Download the appropriate file from the [Releases page](https://github.com/creato
 ---
 
 ## Version History
+
+### v1.1.9 (2026.11.12)
+- **Improved**: Fixed solid green screen issue when importing converted MP4 files into legacy NLEs (Adobe Premiere Pro CS6, CS5, etc.)
+  - Enforced 8-bit YUV420P across all encoders via explicit filter graph conversion (`format=yuv420p`)
+  - Tagged standard Rec.709 color primaries/space/transfer with TV/limited range (`16-235`)
+  - Automatic even-dimension (mod 2) alignment (`scale=trunc(iw/2)*2:trunc(ih/2)*2`) preventing odd-dimension decoder corruption
+  - Enforced Closed GOP (`-flags +cgop`) and standard H.264 High Profile / compatible Level
+  - Stripped proprietary HDR/Dolby Vision atom metadata (`-map_metadata 0` removed) to prevent legacy demuxer parsing errors
+  - Standardized audio to 48kHz stereo AAC (`-ar 48000 -ac 2`)
 
 ### v1.1.8 (2026.11.12)
 - **Hotfix**: Fixed JavaScript uncaught exception (`ReferenceError: vs is not defined`) when clicking file conversion

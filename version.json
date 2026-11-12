@@ -1,5 +1,5 @@
 {
-  "version": "1.1.8",
-  "releaseNotes": "Windows 및 전체 플랫폼에서 파일 변환 시작 시 발생하던 자바스크립트 오류(vs is not defined) 긴급 수정 및 예외 처리 안정화",
+  "version": "1.1.9",
+  "releaseNotes": "구형 프리미어 프로 CS6 및 레거시 NLE 초록색 화면(Green Screen) 호환성 패치: 8-bit YUV420P 및 Rec.709 표준 색공간 강제화, 짝수 해상도 정렬, Closed GOP 적용, 독점 HDR 메타데이터 제거",
   "downloadUrl": "https://github.com/creatorjosephkr/sero-gochim/releases"
 }
